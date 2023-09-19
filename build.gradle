@@ -1,0 +1,58 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+
+    maven {
+        url "https://packages.confluent.io/maven"
+    }
+}
+
+dependencies {
+    implementation 'junit:junit:4.13.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation "io.confluent.ksql:ksqldb-udf:7.3.0"
+    implementation "org.apache.kafka:kafka_2.13:2.5.0"
+    implementation "org.apache.kafka:connect-api:2.5.0"
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+    implementation 'org.json:json:20210307'
+    implementation 'com.github.java-json-tools:json-schema-validator:2.2.14'
+    implementation 'org.apache.kafka:kafka-streams:2.8.0'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+    implementation 'io.confluent:kafka-avro-serializer:6.2.0'
+    implementation 'io.confluent:kafka-schema-registry-client:6.2.0'
+    implementation 'org.apache.avro:avro:1.10.2'
+    implementation 'io.confluent:kafka-streams-avro-serde:6.2.0'
+}
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'Main-Class': 'my.custom.udf.XmlToJsonUdf'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+compileJava {
+    options.compilerArgs << "-parameters"
+}
+
+test {
+    useJUnitPlatform()
+}
